@@ -1,14 +1,26 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); // <-- Importante: Carga las variables de .env
+require('dotenv').config(); // <-- Carga las variables de .env
 
 const connection = new Sequelize(
-    process.env.DB_NAME,     // <-- Lee el nombre de la BD desde .env
-    process.env.DB_USER,     // <-- Lee el usuario desde .env
-    process.env.DB_PASSWORD, // <-- Lee la contraseña desde .env
+    process.env.DB_NAME,     // Nombre de la BD
+    process.env.DB_USER,     // Usuario
+    process.env.DB_PASSWORD, // Contraseña
     {
-        host: process.env.DB_HOST, // <-- Lee el host desde .env
+        host: process.env.DB_HOST, // Host de Railway
+        port: process.env.DB_PORT, // Puerto de Railway (MUY IMPORTANTE)
         dialect: 'mysql',
-        logging: false // Opcional: para no mostrar logs de SQL en la consola
+        
+        // --- ESTA ES LA CORRECCIÓN PARA EL ETIMEDOUT ---
+        dialectOptions: {
+          ssl: {
+            require: true,
+            // Esto es necesario para proxies de DB como el de Railway
+            rejectUnauthorized: false 
+          }
+        },
+        // ------------------------------------------
+
+        logging: false // Para no mostrar logs de SQL
     }
 );
 

@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "db:sync:prod": "node -e \"require('./config.db.js').connection.sync({ force: false }).then(() => console.log('¡ÉXITO! Tablas creadas en Railway.')).catch(err => console.error('ERROR al sincronizar:', err)).finally(() => process.exit())\""},
   "keywords": [],
   "author": "",
   "license": "ISC",
