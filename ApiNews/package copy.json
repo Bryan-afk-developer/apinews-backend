@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "db:sync:prod": "node -e \"require('./config.db.js').connection.sync({ force: false }).then(() => console.log('¡ÉXITO! Tablas creadas en Railway.')).catch(err => console.error('ERROR al sincronizar:', err)).finally(() => process.exit())\""
-  },
+"scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "db:sync:prod": "node -e \"require('./config.db.js').connection.sync({ force: false }).then(() => console.log('¡ÉXITO! Tablas creadas en Railway.')).catch(err => console.error('ERROR al sincronizar:', err)).finally(() => process.exit())\""},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,13 +14,14 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.2.3",  
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.15.2",
+    "mysql2": "^3.10.1",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"
   }
+  
 }
