@@ -1,26 +1,25 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); // <-- Carga las variables de .env
+require('dotenv').config(); // Esta línea es la que falla, pero ya la arreglamos en package.json
 
 const connection = new Sequelize(
-    process.env.DB_NAME,     // Nombre de la BD
-    process.env.DB_USER,     // Usuario
-    process.env.DB_PASSWORD, // Contraseña
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
     {
-        host: process.env.DB_HOST, // Host de Railway
-        port: process.env.DB_PORT, // Puerto de Railway (MUY IMPORTANTE)
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT, // Asegúrate que Vercel tenga esta variable
         dialect: 'mysql',
         
-        // --- ESTA ES LA CORRECCIÓN PARA EL ETIMEDOUT ---
+        // --- Esta es la corrección para el ETIMEDOUT / 500 ---
         dialectOptions: {
           ssl: {
             require: true,
-            // Esto es necesario para proxies de DB como el de Railway
             rejectUnauthorized: false 
           }
         },
         // ------------------------------------------
 
-        logging: false // Para no mostrar logs de SQL
+        logging: false 
     }
 );
 
