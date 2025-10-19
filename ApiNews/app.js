@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { connection } = require('./config.db');
 
-// Importa los modelos para que Sequelize los conozca
+// Importa los modelos
 require('./models/ProfileModel');
 require('./models/StateModel');
 require('./models/CategoryModel');
@@ -10,7 +10,7 @@ require('./models/UserModel');
 require('./models/NewModel');
 
 const app = express();
-const PORT = process.env.PORT || 8000; // Vercel usa process.env.PORT
+const PORT = process.env.PORT || 8000; 
 
 // Middlewares
 app.use(cors());
@@ -33,8 +33,6 @@ app.get('/', (req, res) => {
 });
 
 // --- LÓGICA DE ARRANQUE (SOLO PARA LOCAL) ---
-// Esta condición (require.main === module) es la CLAVE.
-// Solo se ejecuta si corres `node app.js`
 if (require.main === module) {
     connection.sync({ force: false })
         .then(() => {
@@ -49,6 +47,4 @@ if (require.main === module) {
 }
 
 // --- EXPORTACIÓN PARA VERCEL ---
-// Vercel solo importa este archivo, así que tomará esta exportación
-// y NUNCA ejecutará el `if` de arriba.
 module.exports = app;
