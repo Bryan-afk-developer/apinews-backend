@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const { connection } = require('./config.db');
 
-// Importa todos tus modelos
+// --- 1. IMPORTA TUS MODELOS ---
+// (Esto es importante para que Sequelize los conozca al arrancar)
 require('./models/ProfileModel');
 require('./models/StateModel');
 require('./models/CategoryModel');
@@ -10,39 +11,54 @@ require('./models/UserModel');
 require('./models/NewModel');
 
 const app = express();
-const PORT = 8000; // O el puerto que estés usando
+// Vercel te dará un puerto, localmente usará el 8000
+const PORT = process.env.PORT || 8000; 
 
-// Middlewares
+// --- 2. MIDDLEWARES ---
 app.use(cors());
 app.use(express.json());
 
-// Importación de Rutas
-const profile_routes = require('./routes/ProfileRoute');
-const state_routes = require('./routes/StateRoute');
-const category_routes = require('./routes/CategoryRoute');
-const user_routes = require('./routes/UserRoute'); // <-- Asegúrate de que esta línea exista
-const new_routes = require('./routes/NewRoute');
+// --- 3. RUTAS ---
+// Esta es la forma correcta de prefijar tus rutas
+try {
+    app.use('/api/perfiles', require('./routes/ProfileRoute'));
+    app.use('/api/estados', require('./routes/StateRoute'));
+    app.use('/api/categorias', require('./routes/CategoryRoute'));
+    app.use('/api/usuarios', require('./routes/UserRoute')); 
+    app.use('/api/noticias', require('./routes/NewRoute'));
+} catch (error) {
+    console.error("Error al cargar las rutas:", error.message);
+}
 
-// Uso de Rutas con prefijo global
-app.use('/api', profile_routes);
-app.use('/api', state_routes);
-app.use('/api', category_routes);
-app.use('/api', user_routes); // <-- Y que esta también exista
-app.use('/api', new_routes);
+// --- 4. ENDPOINT RAÍZ DE PRUEBA ---
+// Para verificar que el servidor arrancó en Vercel
+app.get('/', (req, res) => {
+  res.send('API de Noticias de Bryan - ¡Desplegada y funcionando!');
+});
 
-// ... el resto de tu código para iniciar el servidor ...
+// --- 5. LÓGICA DE ARRANQUE (SOLO PARA LOCAL) ---
 async function startServer() {
     try {
-        await connection.sync({ force: false });
-        console.log('Todos los modelos se han sincronizado correctamente.');
+        // Sincroniza tu DB local (force: false es seguro)
+        await connection.sync({ force: false }); 
+        console.log('Modelos locales sincronizados correctamente.');
+        
+        // Inicia el servidor SOLO en local
         app.listen(PORT, () => {
-            console.log(`Servidor escuchando en el puerto ${PORT}`);
+            console.log(`Servidor local escuchando en el puerto ${PORT}`);
         });
     } catch (error) {
-        console.error('Error al sincronizar con la base de datos:', error);
+        console.error('Error al arrancar el servidor local:', error);
     }
 }
 
-startServer();
+// Esta condición es la CLAVE:
+// 1. Si corres `node app.js` (local), require.main === module es VERDADERO y arranca el servidor.
+// 2. Si Vercel "importa" este archivo, es FALSO y solo exporta la app.
+if (require.main === module) {
+    startServer();
+}
 
+// --- 6. EXPORTACIÓN PARA VERCEL ---
+// Vercel toma esto y maneja el servidor por su cuenta.
 module.exports = app;
